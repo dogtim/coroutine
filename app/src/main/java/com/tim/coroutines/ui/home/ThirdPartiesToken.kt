@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
 
 class ThirdPartiesToken {
     // The Job represents the current state of the coroutine, and Dispatchers.IO specifies that the coroutines launched within this scope will run on the IO thread.
-    private val scope = CoroutineScope(Job() + Dispatchers.IO)
+    private var scope = CoroutineScope(Job() + Dispatchers.IO)
     // Create a MutableStateFlow to emit the platform information
     private val platformFlow = MutableSharedFlow<SocialMedia>(0)
 
@@ -30,10 +30,12 @@ class ThirdPartiesToken {
     fun cleanUp() {
         // Cancel the scope to cancel ongoing coroutines work
         scope.cancel()
+
+        // If not create new scope, the canceled one can not launch anymore
+        // scope = CoroutineScope(Job() + Dispatchers.IO)
     }
 
-    private suspend fun fetchTokenFrom(platform: SocialMedia): SocialMedia {                             // Dispatchers.Main
-        // Fetch token from platform
+    private suspend fun fetchTokenFrom(platform: SocialMedia): SocialMedia {
         delay(3000)
         return platform
     }

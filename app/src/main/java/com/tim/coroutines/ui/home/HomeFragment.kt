@@ -21,23 +21,19 @@ class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
     private val loginViewModel: LoginViewModel by viewModels { LoginViewModel.Factory }
-    // Job and Dispatcher are combined into a CoroutineContext which
-    // will be discussed shortly
-    val scope = CoroutineScope(Job() + Dispatchers.Main)
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val homeViewModel =
-            ViewModelProvider(this).get(HomeViewModel::class.java)
 
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
         val textView: TextView = binding.textHome
-        homeViewModel.text.observe(viewLifecycleOwner) {
+
+        loginViewModel.text.observe(viewLifecycleOwner) {
             textView.text = it
         }
 
@@ -49,6 +45,15 @@ class HomeFragment : Fragment() {
 //            }
             loginViewModel.fetchPlatformToken(SocialMedia.FACEBOOK)
         }
+
+        binding.buttonTwitterLogin.setOnClickListener {
+            loginViewModel.fetchPlatformToken(SocialMedia.TWITTER)
+        }
+
+        binding.buttonCancel.setOnClickListener {
+            loginViewModel.cancel()
+        }
+
         return root
     }
 

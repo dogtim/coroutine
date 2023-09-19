@@ -1,4 +1,6 @@
 import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -11,13 +13,15 @@ import kotlinx.coroutines.launch
 
 class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel() {
     private val thirdPartiesToken = ThirdPartiesToken()
-
+    private val _text = MutableLiveData<String>().apply {
+        value = "This is home Fragment"
+    }
+    val text: LiveData<String> = _text
     init {
         // Start collecting updates from the Flow
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.Main) {
             thirdPartiesToken.platformUpdates().collect { platform ->
-                Log.d("Tim", "platfrom: $platform ")
-                // Handle the platform update here
+                _text.value = platform.name
                 when (platform) {
                     SocialMedia.TWITTER -> {
                         // Handle Twitter platform
@@ -54,7 +58,12 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
     }
 
     fun fetchPlatformToken(platform: SocialMedia) {
+        _text.value = "Fetching token"
         thirdPartiesToken.fetchToken(platform)
+    }
+    fun cancel() {
+        thirdPartiesToken.cleanUp()
+        _text.value = "Cancel"
     }
 
     companion object {

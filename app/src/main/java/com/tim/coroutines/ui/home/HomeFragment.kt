@@ -1,21 +1,23 @@
 package com.tim.coroutines.ui.home
 
+import LoginViewModel
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.annotation.MainThread
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import com.tim.coroutines.databinding.FragmentHomeBinding
 
 class HomeFragment : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null
-
-    // This property is only valid between onCreateView and
-    // onDestroyView.
     private val binding get() = _binding!!
+    private val loginViewModel: LoginViewModel by viewModels { LoginViewModel.Factory }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -34,6 +36,14 @@ class HomeFragment : Fragment() {
         }
         return root
     }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        loginViewModel.login("username", "password") { isSuccess ->
+            Log.d("Tim", "isSuccess: " + isSuccess)
+        }
+    }
+
 
     override fun onDestroyView() {
         super.onDestroyView()

@@ -8,12 +8,11 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import java.util.logging.SocketHandler
 
 class ThirdPartiesToken {
+    // The Job represents the current state of the coroutine, and Dispatchers.IO specifies that the coroutines launched within this scope will run on the IO thread.
     private val scope = CoroutineScope(Job() + Dispatchers.IO)
     // Create a MutableStateFlow to emit the platform information
     private val platformFlow = MutableStateFlow(SocialMedia.NONE)
@@ -22,9 +21,7 @@ class ThirdPartiesToken {
     fun platformUpdates(): Flow<SocialMedia> = platformFlow.asStateFlow()
     fun fetchToken(platform: SocialMedia) {
         scope.launch {
-            fetchTokenFrom(platform)
-            Log.d("Tim", "fetchToken: ")
-            platformFlow.value = platform
+            platformFlow.value = fetchTokenFrom(platform)
         }
     }
 

@@ -12,12 +12,18 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import com.tim.coroutines.databinding.FragmentHomeBinding
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 
 class HomeFragment : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
     private val loginViewModel: LoginViewModel by viewModels { LoginViewModel.Factory }
+    // Job and Dispatcher are combined into a CoroutineContext which
+    // will be discussed shortly
+    val scope = CoroutineScope(Job() + Dispatchers.Main)
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -34,14 +40,21 @@ class HomeFragment : Fragment() {
         homeViewModel.text.observe(viewLifecycleOwner) {
             textView.text = it
         }
+
+        binding.buttonLogin.setOnClickListener {
+
+            // Give Exception for "username" can trigger the exception
+//            loginViewModel.login("Exception", "password") { isSuccess ->
+//                Log.d("Tim", "isSuccess: " + isSuccess)
+//            }
+            loginViewModel.fetchPlatformToken(SocialMedia.FACEBOOK)
+        }
         return root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        loginViewModel.login("username", "password") { isSuccess ->
-            Log.d("Tim", "isSuccess: " + isSuccess)
-        }
+
     }
 
 

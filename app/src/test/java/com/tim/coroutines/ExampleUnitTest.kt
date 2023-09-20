@@ -2,15 +2,12 @@ package com.tim.coroutines
 
 import LoginRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.TestCoroutineDispatcher
-import kotlinx.coroutines.test.TestDispatcher
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
 import org.junit.Assert.*
-import org.junit.Before
 
 /**
  * Example local unit test, which will execute on the development machine (host).
@@ -37,15 +34,26 @@ class ExampleUnitTest {
         assertEquals(false, resultFailed)
     }
 
+    // demo Inject TestDispatchers in tests
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-
     fun testLoadNewsHighCPULoad() = runTest {
         // Pass the testScheduler provided by runTest's coroutine scope to
         // the test dispatcher
-        val testDispatcher = StandardTestDispatcher(testScheduler)
-        val numberCruncher = NumberCruncher(testDispatcher)
+        val testDispatcher = UnconfinedTestDispatcher(testScheduler)
+        val numberCruncher = NumberCruncher(this, testDispatcher)
         val result = numberCruncher.getResult()
         assertEquals(0, result)
+    }
+
+    // Demo the different scope
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun testLoadNewsHighCPULoadWithSharedObject() = runTest {
+        val testDispatcher = UnconfinedTestDispatcher(testScheduler)
+        // val customizedScope = CoroutineScope(Dispatchers.Default)
+        val numberCruncher = NumberCruncher(this, testDispatcher)
+        numberCruncher.calculate()
+        assertEquals(0, numberCruncher.results().first())
     }
 }

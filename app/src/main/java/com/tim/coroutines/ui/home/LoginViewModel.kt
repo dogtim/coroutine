@@ -8,16 +8,20 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.tim.coroutines.ui.home.SocialMedia
 import com.tim.coroutines.ui.home.ThirdPartiesToken
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel() {
+
     private val thirdPartiesToken = ThirdPartiesToken()
-    private val _text = MutableLiveData<String>().apply {
-        value = "This is home Fragment"
-    }
+    private val _text = MutableLiveData<String>()
     val text: LiveData<String> = _text
     init {
+        initUpdates()
+    }
+
+    private fun initUpdates() {
         // Start collecting updates from the Flow
         viewModelScope.launch(Dispatchers.Main) {
             thirdPartiesToken.platformUpdates().collect { platform ->
@@ -31,25 +35,22 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
                     }
                     // Add more cases for other platforms as needed
                     else -> {
-                        
+
                     }
                 }
             }
         }
-
     }
+
     fun login(username: String, password: String, onResult: (Boolean) -> Unit) {
         // Main thread
         Log.i("Tim", "Step 1:  ${Thread.currentThread().name}")
         viewModelScope.launch(Dispatchers.IO) {
             // I/O thread
             Log.i("Tim", "Step 2:  ${Thread.currentThread().name}")
-            val result = try {
-                loginRepository.login(username, password)
-            } catch(e: Exception) {
-                Log.e("Tim", "e + ${e.message}")
-                false
-            }
+
+            val result = loginRepository.login(username)
+
             // Notify the result on the main thread
             onResult(result)
         }
@@ -61,9 +62,16 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
         _text.value = "Fetching token"
         thirdPartiesToken.fetchToken(platform)
     }
+
     fun cancel() {
-        thirdPartiesToken.cleanUp()
+        // thirdPartiesToken.cancelScope()
+        thirdPartiesToken.cancelJob()
         _text.value = "Cancel"
+    }
+
+    fun exception() {
+        thirdPartiesToken.exception()
+        _text.value = "Exception"
     }
 
     companion object {

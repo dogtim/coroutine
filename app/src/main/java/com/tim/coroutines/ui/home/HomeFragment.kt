@@ -54,6 +54,10 @@ class HomeFragment : Fragment() {
             loginViewModel.cancel()
         }
 
+        binding.buttonThrowException.setOnClickListener {
+            loginViewModel.exception()
+        }
+
         return root
     }
 

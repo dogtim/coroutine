@@ -29,29 +29,28 @@ class ThirdPartiesToken {
     fun fetchToken(platform: SocialMedia) {
 
         job = scope.launch {
-            Log.i("Tim", "fetchToken thread:  ${Thread.currentThread().name}")
             platformFlow.emit(fetchTokenFrom(platform))
         }
     }
 
     fun cancelScope() {
         // Cancel the scope to cancel ongoing coroutines work
+        Log.i("Tim", "cancel scope job:  ${scope.coroutineContext.job.isCancelled}")
         scope.cancel()
-
+        Log.i("Tim", "cancel scope job:  ${scope.coroutineContext.job.isCancelled}")
         // If not create new scope, the canceled one can not launch anymore
         // scope = CoroutineScope(Job() + Dispatchers.IO)
     }
 
     fun cancelJob() {
+        Log.i("Tim", "cancel unit job:  ${job?.isCancelled}")
         // Cancel the coroutine started above, this doesn't affect the scope
         // this coroutine was launched in
         job?.cancel()
+        Log.i("Tim", "cancel unit job:  ${job?.isCancelled}")
     }
 
     fun exception() {
-        // Cancel the coroutine started above, this doesn't affect the scope
-        // this coroutine was launched in
-
         scope.launch(CoroutineName("Exception")) {
             Log.i("Tim", "coroutineContext name:  ${coroutineContext[CoroutineName]}")
 

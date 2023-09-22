@@ -42,7 +42,8 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
         }
     }
 
-    fun login(username: String, password: String, onResult: (Boolean) -> Unit) {
+    // Update UI by callback (Not a good way)
+    fun isLogin(username: String, onResult: (Boolean) -> Unit) {
         // Main thread
         Log.i("Tim", "Step 1:  ${Thread.currentThread().name}")
         viewModelScope.launch(Dispatchers.IO) {
@@ -51,7 +52,6 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
 
             val result = loginRepository.login(username)
 
-            // Notify the result on the main thread
             onResult(result)
         }
         // Main thread

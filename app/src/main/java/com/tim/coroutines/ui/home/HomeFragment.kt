@@ -38,12 +38,17 @@ class HomeFragment : Fragment() {
         }
 
         binding.buttonLogin.setOnClickListener {
+            loginViewModel.fetchPlatformToken(SocialMedia.FACEBOOK)
+        }
 
+        binding.buttonIsLogin.setOnClickListener {
             // Give Exception for "username" can trigger the exception
 //            loginViewModel.login("Exception", "password") { isSuccess ->
 //                Log.d("Tim", "isSuccess: " + isSuccess)
 //            }
-            loginViewModel.fetchPlatformToken(SocialMedia.FACEBOOK)
+            loginViewModel.isLogin("username") { isSuccess ->
+                Log.i("Tim", "Step 4: ${Thread.currentThread().name} isSuccess: " + isSuccess)
+            }
         }
 
         binding.buttonTwitterLogin.setOnClickListener {
@@ -65,7 +70,6 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
     }
-
 
     override fun onDestroyView() {
         super.onDestroyView()

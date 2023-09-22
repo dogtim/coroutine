@@ -9,7 +9,7 @@ class LoginRepository(private val defaultDispatcher: CoroutineDispatcher = Dispa
     // Simulate a network login request
     suspend fun login(username: String): Boolean {
         // Simulate network delay
-        delay(10000)
+        delay(5000)
 
         if (username == "Exception") {
             // throw Exception("Network request failed")
